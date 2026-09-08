@@ -4,7 +4,7 @@
 
 ---
 
-## How to read this document
+## How to Read This Document
 
 This tutorial is on the **computational assessment of patent novelty**, the task of deciding whether an invention described in a patent claim was already disclosed in an earlier document.
 
