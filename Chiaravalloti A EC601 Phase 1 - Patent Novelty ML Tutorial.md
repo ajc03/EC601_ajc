@@ -98,7 +98,7 @@ d) Neither; FTO analysis does not use retrieval
 
 ### 2.1 The Anatomy of a Claim
 
-A claim is a single sentence that defines the invention as a combination of **features**, where each feature is a component, step, or characteristic [3]. For example, consider the example of a claim about a text classification method, whose features might be: converting text into tokens, applying a neural network to the tokens, or mapping embeddings into the label space [3].
+A claim is a single sentence that defines the invention as a combination of **features**, where each feature is a component, step, or characteristic [3]. Consider the paper's illustration of a claim about a text classification method, whose features might be: converting text into tokens, applying a neural network to the tokens, or mapping embeddings into the label space [3].
 
 Two structural facts:
 
@@ -152,7 +152,7 @@ Proxies used in this field:
 
 None of these are wrong, but all of them are *approximations whose error rate is unknown*. Two specific failure modes recur:
 
-**Unreliable negatives -** While cited passages reliably indicate disclosure, the absence of a citation does not imply non-disclosure. Negatives may not be true negatives [3]. An examiner who found one killer passage had no reason to keep listing others.
+**Unreliable negatives -** "While cited passages reliably indicate disclosure, the absence of a citation does not imply non-disclosure." Negatives may not be true negatives [3]. An examiner who found one killer passage had no reason to keep listing others.
 
 **Granularity mismatch.** An examiner citing paragraphs 27–28 against claims 1 and 3–9 made *one* legal judgment about a document. Expanding that into many independent claim–passage pairs assumes a granularity the original annotation never had.
 
@@ -209,7 +209,7 @@ You do not need a deep IR background, but you do need the vocabulary to read the
 
 **Lexical matching (BM25, ROUGE-L overlap) -** Score documents by shared terms, weighting rare terms more heavily and normalising for length. This is fast, interpretable, and hard to beat. Its weakness is the patent vocabulary problem: it cannot match "elongate conductive member" to "wire."
 
-**Dense retrieval -** Encode queries and passages into vectors so semantically similar texts sit close together, then retrieve by nearest neighbour. Karpukhin et al.'s Dense Passage Retrieval (DPR) architecture (two separate encoders, one for queries and one for passages) is the reference design, and Risch et al. report being the first to train a DPR model on patent data [1].
+**Dense retrieval -** Encode queries and passages into vectors so semantically similar texts sit close together, then retrieve by nearest neighbour. Dense Passage Retrieval (DPR) architecture (two separate encoders, one for queries and one for passages) is the reference design, and Risch et al. report being the first to train a DPR model on patent data [1].
 
 **Cross-encoders / text-pair classification -** Feed both texts to one model together and classify the pair. More accurate than dense retrieval because the two texts can attend to each other, but too expensive to run over a whole corpus, so it is used for re-ranking a shortlist. PatentMatch's BERT baseline is this design [1].
 
@@ -280,7 +280,7 @@ The three papers below span five years and, read together, tell a coherent story
 
 **Design choices worth copying:** The train/test split is time-wise on filing date (March 29, 2017) rather than random [1]. Patent families produce near-identical claims filed years apart; a random split would scatter them across train and test and inflate scores through memorisation. It also matches deployment, where tomorrow's application is not in today's index.
 
-**Results:** A fine-tuned BERT text-pair classifier reached **54%** accuracy on the balanced variant and **52%** on the stricter one, which is barely above chance. Validation loss stopped improving after six epochs, so this result is not due to undertraining. The authors are not surprised that the task is hard, citing legal jargon and domain-specific language as a reason for the performance[1]. A DPR model reached an average in-batch rank of 1.42 out of 8, which they present modestly as useful for narrowing to a handful of candidates for a human expert [1].
+**Results:** A fine-tuned BERT text-pair classifier reached **54%** accuracy on the balanced variant and **52%** on the stricter one, which is barely above chance. Validation loss stopped improving after six epochs, so this result is not due to undertraining. The authors are not surprised that the task is hard, citing legal jargon and domain-specific language, that are difficult for laymen to understand, as a reason for the performance [1]. A DPR model reached an average in-batch rank of 1.42 out of 8, which they present modestly as useful for narrowing to a handful of candidates for a human expert [1].
 
 **Known limitations.**
 - References that resolve to figures, figure captions, or whole documents were discarded [1]. Prior art whose disclosure lives in drawings is systematically excluded.
@@ -456,7 +456,7 @@ d) Retrieval and classification are measured on different splits
 
 **Q4.9 — (b).** Perfect evidence does not lift accuracy, so the limiting step is the disclosure judgment itself [3]. This relocates the research problem from retrieval to reasoning.
 
-**Q4.10.** Any three of: (i) train a classifier that sees only the query and *not* the evidence (if it performs well, you have a shortcut), (ii) check for length or formatting differences between classes and stratify, (iii) strip artifacts introduced by the document lifecycle (such as reference numerals), (iv) build an adversarial subset from the shortcut model's errors as a diagnostic, (v) run a contamination check against indexed pretraining corpora, (vi) split by time or by group rather than randomly, (vii) establish a human expert baseline and inter-annotator agreement (has not been done before).
+**Q4.10.** Any three of: (i) train a classifier that sees only the query and *not* the evidence (if it performs well, you have a shortcut), (ii) check for length or formatting differences between classes and stratify, (iii) strip artifacts introduced by the document lifecycle (such as reference numerals), (iv) build an adversarial subset from the shortcut model's errors as a diagnostic, (v) run a contamination check against indexed pretraining corpora, (vi) split by time or by group rather than randomly, (vii) establish a human expert baseline and inter-annotator agreement.
 
 </details>
 
@@ -486,19 +486,19 @@ d) Retrieval and classification are measured on different splits
 
 ## 6. What is Still Open?
 
-**1. There is no human baseline:** None of these papers reports how well trained experts do on its task, or how much they agree with each other. Some even name this explicitly as future work [3]. Every reported number therefore floats without a ceiling: nobody knows whether 27.4 F1 on feature-level passage retrieval is poor or near the limit of what examiner agreement would support. **This is the largest and most tractable gap in the area, and it requires domain expertise rather than compute.**
+**1. There is no human baseline:** None of these papers reports how well trained experts do on its task, or how much they agree with each other. Some even name this explicitly as future work [3]. Every reported number therefore floats without a ceiling: nobody knows whether 20.9 F1 on feature-level passage retrieval is poor or near the limit of what examiner agreement would support. **This is the largest and most tractable gap in the area, and it requires domain expertise rather than compute.**
 
 **2. The disclosure-judgment bottleneck:** The oracle result [3] says retrieval is solved enough that it is no longer the limiter. What fails is deciding whether a passage discloses a feature. That is an abstract reasoning problem with a legal standard attached.
 
 **3. Obviousness is untouched:** Every dataset here excludes it: "Y" citations dropped [1], inventive-step rejections filtered out [3]. A large share of real examination turns on it.
 
-**4. The figure gap is real and unoccupied:** PatentMatch discards examiner references that resolve to figures [1]. DeepPatent covers only design patents, whose figures are object depictions, explicitly unlike the flowcharts and diagrams of utility patents [2]. So there is **no resource for utility-patent figure-based prior art**.
+**4. The figure gap is real and unoccupied:** PatentMatch discards examiner references that resolve to figures [1]. DeepPatent covers only design patents, whose figures are object depictions, explicitly unlike the flowcharts and diagrams of utility patents [2]. Existing utility-patent figure resources are small and coarse-grained, CLEF-IP 2011 covers only 211 patents for retrival, and sorts figures into nine broad image types, so **no large-scale, fine grained resource for utility-patent retrieval exists** [2].
 
 **5. Multi-document settings:** Novelty is formally assessed against a single document, but examiners compare across many and record only the best match [3]. Real deployment requires finding the document *and* judging it.
 
 **6. Non-patent literature:** All three datasets treat prior art as patents only. Real novelty analysis includes scientific papers, manuals, and public disclosures [3].
 
-**7. Cross-jurisdiction generality:** Two of three datasets are EPO-derived. EPO examination is unusually high quality (each application is examined by more than one examiner to reach a joint decision [3]) so results may not transfer to offices with different procedures.
+**7. Cross-jurisdiction generality:** Two of three datasets are EPO-derived. EPO examination is unusually high quality (each application is examined by at least three examiners to reach a joint decision [3]) so results may not transfer to offices with different procedures.
 
 ---
 
@@ -516,7 +516,7 @@ b) It would improve model accuracy through better training data
 c) Without it, no one knows whether a given score is near the task's ceiling
 d) It is needed to compute inter-annotator agreement for licensing
 
-**Q5.3 (short answer) -** Using the checklist in §7, write the two most damaging questions you would ask about a new paper claiming 85% accuracy on patent novelty prediction.
+**Q5.3 (short answer) -** Write the two most damaging questions you would ask about a new paper claiming 85% accuracy on patent novelty prediction.
 
 <details>
 <summary><b>Answers to Quiz 5</b></summary>
@@ -531,7 +531,7 @@ d) It is needed to compute inter-annotator agreement for licensing
 
 ---
 
-## 8. References
+## 7. References
 
 All three primary references were retrieved and read in full during preparation of this tutorial. Claims attributed to them were checked against the paper text.
 
