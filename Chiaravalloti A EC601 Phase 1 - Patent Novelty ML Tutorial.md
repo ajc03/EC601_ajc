@@ -45,11 +45,11 @@ The same technical system ("find prior art for this claim") becomes three differ
 | **Stopping rule** | Stops on finding one killer reference | Must be exhaustive | Must be exhaustive |
 | **Cost of a miss** | A bad patent issues; correctable later via opposition | Case lost; the patent stands | Injunction, damages, product pulled |
 | **Cost of a false alarm** | Wasted examination effort | Wasted attorney hours | Wasted redesign, possibly abandoned product |
-| **What to optimise** | Precision | Recall | Recall |
+| **What to optimize** | Precision | Recall | Recall |
 
 Only one retrieved "X" or "Y" document is enough to refuse claim 1, and for that reason the search task is focused more on precision than on recall [1]. (Will explain what "X" or "Y" documents are and what "claim 1" means later in the tutorial).
 
-It is tempting to say "patent searches are precision-focused tasks." That is not necessarily true. Precision-dominance is a property of *the examiner's role and stopping rule*, not of patent search. For the litigator, the asymmetry inverts completely: a missed reference is the whole case. Any paper one reads is implicitly serving one of these users, and its metrics only make sense once he/she know which.
+It is tempting to say "patent searches are precision-focused tasks." That is not necessarily true. Precision-dominance is a property of *the examiner's role and stopping rule*, not of patent search. For the litigator, the asymmetry inverts completely: a missed reference is the whole case. Any paper one reads is implicitly serving one of these users, and its metrics only make sense once he/she knows which.
 
 ### 1.4 What are the potential applications?
 
@@ -115,7 +115,7 @@ A prior art document that discloses nine of ten features destroys nothing. Addin
 Understanding the European procedure is necessary because two of the three datasets in this tutorial are built from it.
 
 1. An application is filed and published as an **A1** document.
-2. The office produces a **European Search Report (ESR)** listing cited prior art, categorising each document and pointing at relevant passages.
+2. The office produces a **European Search Report (ESR)** listing cited prior art, categorizing each document and pointing at relevant passages.
 3. Where a claim lacks novelty, the examiner writes a **European Search Opinion (ESOP)** explaining the rejection, reciting the claim and giving references for each feature [3].
 4. The applicant **amends** the claims — typically adding limitations — possibly over several rounds.
 5. If successful, the patent is granted and published as a **B1** document [3].
@@ -207,7 +207,7 @@ You do not need a deep IR background, but you do need the vocabulary to read the
 
 ### 3.1 Ways to Match Text
 
-**Lexical matching (BM25, ROUGE-L overlap) -** Score documents by shared terms, weighting rare terms more heavily and normalising for length. This is fast, interpretable, and hard to beat. Its weakness is the patent vocabulary problem: it cannot match "elongate conductive member" to "wire."
+**Lexical matching (BM25, ROUGE-L overlap) -** Score documents by shared terms, weighting rare terms more heavily and normalizing for length. This is fast, interpretable, and hard to beat. Its weakness is the patent vocabulary problem: it cannot match "elongate conductive member" to "wire."
 
 **Dense retrieval -** Encode queries and passages into vectors so semantically similar texts sit close together, then retrieve by nearest neighbour. Dense Passage Retrieval (DPR) architecture (two separate encoders, one for queries and one for passages) is the reference design, and Risch et al. report being the first to train a DPR model on patent data [1].
 
@@ -278,7 +278,7 @@ The three papers below span five years and, read together, tell a coherent story
 
 **Scale (what it means):** There were 6,259,703 samples, but only 297,147 distinct claim texts and 31,238 distinct applications [1]. That is roughly 21 samples per claim. The sample count wildly overstates independent information. The authors provide a stricter variant with exactly one X and one A per claim, which collapses the data to 25,340 samples [1]. That number (not 6,259,703) is the honest measure of independent signal.
 
-**Design choices worth copying:** The train/test split is time-wise on filing date (March 29, 2017) rather than random [1]. Patent families produce near-identical claims filed years apart; a random split would scatter them across train and test and inflate scores through memorisation. It also matches deployment, where tomorrow's application is not in today's index.
+**Design choices worth copying:** The train/test split is time-wise on filing date (March 29, 2017) rather than random [1]. Patent families produce near-identical claims filed years apart; a random split would scatter them across train and test and inflate scores through memorization. It also matches deployment, where tomorrow's application is not in today's index.
 
 **Results:** A fine-tuned BERT text-pair classifier reached **54%** accuracy on the balanced variant and **52%** on the stricter one, which is barely above chance. Validation loss stopped improving after six epochs, so this result is not due to undertraining. The authors are not surprised that the task is hard, citing legal jargon and domain-specific language, that are difficult for laymen to understand, as a reason for the performance [1]. A DPR model reached an average in-batch rank of 1.42 out of 8, which they present modestly as useful for narrowing to a handful of candidates for a human expert [1].
 
@@ -328,7 +328,7 @@ d) The label distribution must be approximately balanced
 
 **The scope restriction you must not miss:** Design patents capture the visual characteristics of an object, so their figures are object depictions, whereas utility patents contain flowcharts, plots, mathematical expressions, and text-heavy mechanical diagrams [2]. DeepPatent is therefore a clean vision benchmark and a **poor proxy for utility-patent prior art**. Utility patents are where essentially all electrical and computing subject matter lives.
 
-**Method:** PatentNet: ResNet18/50 backbones with Generalized Mean pooling and L2 normalisation, pretrained then fine-tuned by classification (each patent ID as a class) and then with triplet or contrastive retrieval loss [2].
+**Method:** PatentNet: ResNet18/50 backbones with Generalized Mean pooling and L2 normalization, pretrained then fine-tuned by classification (each patent ID as a class) and then with triplet or contrastive retrieval loss [2].
 
 **Four Important Results**
 
@@ -429,7 +429,7 @@ On passage retrieval and novel feature identification, LLM workflows clearly bea
 
 **Q4.7 (multiple choice) -** A BERT classifier with no access to the prior art reaches 75.2% accuracy. This shows:
 a) Shortcuts survive in the claim text, so accuracy needn't reflect novelty reasoning
-b) BERT memorised the prior art documents during pretraining
+b) BERT memorized the prior art documents during pretraining
 c) The stratification failed and the classes became unbalanced
 d) Claim-level novelty is easier than feature-level retrieval
 
@@ -474,7 +474,7 @@ d) Retrieval and classification are measured on different splits
 | Headline result | BERT 54% (near chance) | mAP 0.376 → 0.262 with scale | Shortcut model 75.2% > best LLM 70.7% |
 | Acknowledged weakness | Coarse labels; figures dropped | Same-patent relevance proxy | Proxy novel-feature labels; narrow domains |
 
-**Three lessons that generalise beyond patents:**
+**Three lessons that generalize beyond patents:**
 
 **1. Free labels are never free -** Each dataset bought scale by repurposing an artifact made for another purpose. Each inherited a specific distortion: coarse aggregation, same-patent relevance, prosecution-amendment proxies. The distortion is the price, not a flaw in the work, and the mature move is to measure it. The 19% ESR/ESOP figure [3] is the first time anyone in this line put a number on it.
 
