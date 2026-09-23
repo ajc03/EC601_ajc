@@ -2,6 +2,8 @@
 
 **EC601 Phase 1 · AJ Chiaravalloti**
 
+**Note:** This Project Proposal was generated with Claude based on the instructions provided during the first class session. The "Defining Your Project" document should be taken as more authoritative than this. This document was created so that something that more closely resembled the Project Proposal task was present in the documentation. This was read and checked for accuracy, but no substantial changes were made.
+
 **Research area:** Area 1 — Machine Learning: Vision, Multimodal & Beyond. This project follows the first Vision bullet directly: *stress-test vision-language models on a niche domain, characterize where and why they fail, then close the gap with targeted fine-tuning or retrieval.* The niche domain is utility-patent drawings.
 
 ---
